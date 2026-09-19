@@ -1,0 +1,6 @@
+{
+  "name": "المرفأ - Al-Mirfa",
+  "description": "تطبيق ويب تقدمي عربي لإدارة جلسات التركيز والدراسة والعمل العميق بدون اتصال بالإنترنت",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
