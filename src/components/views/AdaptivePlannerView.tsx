@@ -9,12 +9,16 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { AdaptivePlannerData, SubjectItem, StudySession } from '../../types';
+import { ViewHeaderNav } from '../navigation/ViewHeaderNav';
+import { ScreenTab } from '../Sidebar';
 
 interface AdaptivePlannerViewProps {
   planner: AdaptivePlannerData;
   subjects: SubjectItem[];
   sessions: StudySession[];
   onUpdatePlanner: (data: AdaptivePlannerData) => void;
+  onBackToHome?: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
 }
 
 export const AdaptivePlannerView: React.FC<AdaptivePlannerViewProps> = ({
@@ -22,6 +26,8 @@ export const AdaptivePlannerView: React.FC<AdaptivePlannerViewProps> = ({
   subjects,
   sessions,
   onUpdatePlanner,
+  onBackToHome,
+  onNavigateToTab,
 }) => {
   const [weeklyTargetHours, setWeeklyTargetHours] = useState(planner.weeklyTargetHours);
   const [availableDays, setAvailableDays] = useState<number[]>(planner.availableDays);
@@ -98,6 +104,20 @@ export const AdaptivePlannerView: React.FC<AdaptivePlannerViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {onBackToHome && (
+        <ViewHeaderNav
+          currentTab="planner"
+          title="المنسق التكيفي للجداول"
+          icon={CalendarDays}
+          onBackToHome={onBackToHome}
+          onNavigateToTab={onNavigateToTab}
+          relatedTabs={[
+            { id: 'subjects', label: 'المواد الدراسية' },
+            { id: 'analytics', label: 'الإحصائيات' },
+          ]}
+        />
+      )}
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs"

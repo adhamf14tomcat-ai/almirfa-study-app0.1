@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Bookmark, BookmarkCheck, Plus, Trash2, X, Sparkles, Quote } from 'lucide-react';
 import { QuoteItem } from '../../types';
+import { ViewHeaderNav } from '../navigation/ViewHeaderNav';
+import { ScreenTab } from '../Sidebar';
 
 interface QuotesViewProps {
   quotes: QuoteItem[];
   onToggleSaveQuote: (quote: QuoteItem) => void;
   onAddCustomQuote: (quote: { text: string; source: string }) => void;
   onDeleteQuote: (id: string) => void;
+  onBackToHome?: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
 }
 
 export const QuotesView: React.FC<QuotesViewProps> = ({
@@ -14,6 +18,8 @@ export const QuotesView: React.FC<QuotesViewProps> = ({
   onToggleSaveQuote,
   onAddCustomQuote,
   onDeleteQuote,
+  onBackToHome,
+  onNavigateToTab,
 }) => {
   const [filter, setFilter] = useState<'saved' | 'all'>('saved');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -41,6 +47,20 @@ export const QuotesView: React.FC<QuotesViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {onBackToHome && (
+        <ViewHeaderNav
+          currentTab="quotes"
+          title="دفتر المقولات والحكم"
+          icon={Bookmark}
+          onBackToHome={onBackToHome}
+          onNavigateToTab={onNavigateToTab}
+          relatedTabs={[
+            { id: 'sounds', label: 'مكتبة الأصوات' },
+            { id: 'appearance', label: 'المظهر والخطوط' },
+          ]}
+        />
+      )}
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4"

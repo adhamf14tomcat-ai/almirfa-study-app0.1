@@ -1,16 +1,22 @@
 import React from 'react';
-import { Palette, Sun, Moon, Smartphone, Check, Type, ZoomIn } from 'lucide-react';
+import { Palette, Sun, Moon, Smartphone, Check, Type, ZoomIn, ArrowRight, ArrowLeft } from 'lucide-react';
 import { AppSettings, AppearanceMode, ColorPalette, ThemePalette, FontFamily } from '../../types';
 import { THEME_PALETTES } from '../../constants';
+import { SettingsTabsNav } from '../navigation/SettingsTabsNav';
+import { ScreenTab } from '../Sidebar';
 
 interface AppearanceViewProps {
   settings: AppSettings;
   onUpdateSettings: (settings: Partial<AppSettings>) => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
+  onBackToHome?: () => void;
 }
 
 export const AppearanceView: React.FC<AppearanceViewProps> = ({
   settings,
   onUpdateSettings,
+  onNavigateToTab,
+  onBackToHome,
 }) => {
   const fontOptions: { id: FontFamily; name: string; sample: string }[] = [
     { id: 'tajawal', name: 'خط تجوّل (Tajawal)', sample: 'كل جلسة هادئة تقرّبك من هدفك' },
@@ -21,6 +27,15 @@ export const AppearanceView: React.FC<AppearanceViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {/* Settings Navigation Bar */}
+      {onNavigateToTab && (
+        <SettingsTabsNav
+          currentTab="appearance"
+          onNavigate={onNavigateToTab}
+          onBackToHome={onBackToHome}
+        />
+      )}
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs"
@@ -263,6 +278,33 @@ export const AppearanceView: React.FC<AppearanceViewProps> = ({
           <span>120% (أكبر)</span>
         </div>
       </div>
+
+      {/* Prev / Next Settings Flow Buttons */}
+      {onNavigateToTab && (
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <button
+            onClick={() => onNavigateToTab('settings')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-xs border transition cursor-pointer hover:bg-slate-500/10 smooth-nav-pill"
+            style={{
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--bg-card)',
+            }}
+          >
+            <ArrowRight className="w-3.5 h-3.5" />
+            <span>السابق: إعدادات عامة</span>
+          </button>
+
+          <button
+            onClick={() => onNavigateToTab('timer-settings')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-xs text-white transition shadow-sm hover:shadow cursor-pointer smooth-nav-pill"
+            style={{ backgroundColor: 'var(--primary-color)' }}
+          >
+            <span>التالي: إعدادات المؤقت</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

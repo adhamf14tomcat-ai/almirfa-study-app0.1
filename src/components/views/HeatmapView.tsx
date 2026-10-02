@@ -1,15 +1,24 @@
 import React, { useState, useMemo } from 'react';
 import { Calendar, ChevronLeft, ChevronRight, X, Clock, Star } from 'lucide-react';
 import { StudySession, SubjectItem } from '../../types';
+import { ViewHeaderNav } from '../navigation/ViewHeaderNav';
+import { ScreenTab } from '../Sidebar';
 
 interface HeatmapViewProps {
   sessions: StudySession[];
   subjects: SubjectItem[];
+  onBackToHome?: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
 }
 
 type TimeRange = '3months' | '6months' | '1year';
 
-export const HeatmapView: React.FC<HeatmapViewProps> = ({ sessions, subjects }) => {
+export const HeatmapView: React.FC<HeatmapViewProps> = ({
+  sessions,
+  subjects,
+  onBackToHome,
+  onNavigateToTab,
+}) => {
   const [range, setRange] = useState<TimeRange>('3months');
   const [selectedDay, setSelectedDay] = useState<{
     dateStr: string;
@@ -86,6 +95,20 @@ export const HeatmapView: React.FC<HeatmapViewProps> = ({ sessions, subjects }) 
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {onBackToHome && (
+        <ViewHeaderNav
+          currentTab="heatmap"
+          title="الخريطة الحرارية للإنتاجية"
+          icon={Calendar}
+          onBackToHome={onBackToHome}
+          onNavigateToTab={onNavigateToTab}
+          relatedTabs={[
+            { id: 'analytics', label: 'الإحصائيات' },
+            { id: 'planner', label: 'المنسق التكيفي' },
+          ]}
+        />
+      )}
+
       {/* Header with Range Switcher */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4"

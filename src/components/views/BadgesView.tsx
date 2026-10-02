@@ -1,18 +1,36 @@
 import React, { useState } from 'react';
 import { Award, Lock, CheckCircle2, X, Sparkles, Calendar } from 'lucide-react';
 import { BadgeItem } from '../../types';
+import { ViewHeaderNav } from '../navigation/ViewHeaderNav';
+import { ScreenTab } from '../Sidebar';
 
 interface BadgesViewProps {
   badges: BadgeItem[];
+  onBackToHome?: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
 }
 
-export const BadgesView: React.FC<BadgesViewProps> = ({ badges }) => {
+export const BadgesView: React.FC<BadgesViewProps> = ({ badges, onBackToHome, onNavigateToTab }) => {
   const [selectedBadge, setSelectedBadge] = useState<BadgeItem | null>(null);
 
   const unlockedCount = badges.filter((b) => b.unlocked).length;
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {onBackToHome && (
+        <ViewHeaderNav
+          currentTab="badges"
+          title="معرض الأوسمة"
+          icon={Award}
+          onBackToHome={onBackToHome}
+          onNavigateToTab={onNavigateToTab}
+          relatedTabs={[
+            { id: 'profile', label: 'الملف الشخصي' },
+            { id: 'analytics', label: 'الإحصائيات' },
+          ]}
+        />
+      )}
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4"

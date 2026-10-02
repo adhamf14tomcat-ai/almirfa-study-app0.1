@@ -19,12 +19,16 @@ import {
 import { AMBIENT_SOUNDS } from '../../constants';
 import { CustomSoundItem } from '../../types';
 import { audioEngine } from '../../services/audio';
+import { ViewHeaderNav } from '../navigation/ViewHeaderNav';
+import { ScreenTab } from '../Sidebar';
 
 interface SoundsViewProps {
   customSounds: CustomSoundItem[];
   onAddCustomSound: (sound: { name: string; base64Data: string; sizeBytes: number }) => void;
   onUpdateCustomSoundName: (id: string, name: string) => void;
   onDeleteCustomSound: (id: string) => void;
+  onBackToHome?: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
 }
 
 export const SoundsView: React.FC<SoundsViewProps> = ({
@@ -32,6 +36,8 @@ export const SoundsView: React.FC<SoundsViewProps> = ({
   onAddCustomSound,
   onUpdateCustomSoundName,
   onDeleteCustomSound,
+  onBackToHome,
+  onNavigateToTab,
 }) => {
   const [playingAmbientId, setPlayingAmbientId] = useState<string | null>(null);
   const [playingPersonalId, setPlayingPersonalId] = useState<string | null>(null);
@@ -109,6 +115,20 @@ export const SoundsView: React.FC<SoundsViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {onBackToHome && (
+        <ViewHeaderNav
+          currentTab="sounds"
+          title="مكتبة ومسارات الأصوات"
+          icon={Volume2}
+          onBackToHome={onBackToHome}
+          onNavigateToTab={onNavigateToTab}
+          relatedTabs={[
+            { id: 'quotes', label: 'دفتر المقولات' },
+            { id: 'timer-settings', label: 'إعدادات المؤقت' },
+          ]}
+        />
+      )}
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs"

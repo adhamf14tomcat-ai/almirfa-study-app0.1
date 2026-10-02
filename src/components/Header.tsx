@@ -1,6 +1,7 @@
 import React from 'react';
-import { Menu, Flame, Award, Shield, Sparkles } from 'lucide-react';
+import { Menu, Flame, Award, Shield, Settings, Home } from 'lucide-react';
 import { UserProfile, StreakData, RankInfo } from '../types';
+import { ScreenTab } from './Sidebar';
 import { PWAInstallButton } from './PWAInstallButton';
 
 interface HeaderProps {
@@ -10,6 +11,9 @@ interface HeaderProps {
   currentRank: RankInfo;
   onOpenProfile: () => void;
   onOpenStreakShield: () => void;
+  currentTab?: ScreenTab;
+  onSelectTab?: (tab: ScreenTab) => void;
+  onGoHome?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -19,7 +23,28 @@ export const Header: React.FC<HeaderProps> = ({
   currentRank,
   onOpenProfile,
   onOpenStreakShield,
+  currentTab = 'home',
+  onSelectTab,
+  onGoHome,
 }) => {
+  const isSettingsActive = [
+    'settings',
+    'appearance',
+    'timer-settings',
+    'widgets',
+    'backup',
+  ].includes(currentTab);
+
+  const handleSettingsClick = () => {
+    if (!onSelectTab) return;
+    if (isSettingsActive) {
+      if (onGoHome) onGoHome();
+      else onSelectTab('home');
+    } else {
+      onSelectTab('settings');
+    }
+  };
+
   return (
     <header
       id="app-header"
@@ -36,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
             id="sidebar-toggle-btn"
             onClick={onOpenSidebar}
             aria-label="فتح القائمة الجانبية"
-            className="p-2 rounded-xl border transition-colors cursor-pointer hover:opacity-80"
+            className="p-2 rounded-xl border transition-colors cursor-pointer hover:opacity-80 smooth-nav-pill"
             style={{
               backgroundColor: 'var(--bg-elevated)',
               borderColor: 'var(--border-color)',
@@ -46,8 +71,12 @@ export const Header: React.FC<HeaderProps> = ({
             <Menu className="w-5 h-5" />
           </button>
 
-          <div className="flex items-center gap-2 select-none">
-            <span className="text-2xl animate-pulse" role="img" aria-label="شعار المرفأ">
+          <button
+            onClick={onGoHome}
+            title="المرفأ - العودة للرئيسية"
+            className="flex items-center gap-2 select-none text-right cursor-pointer group"
+          >
+            <span className="text-2xl group-hover:scale-110 transition-transform" role="img" aria-label="شعار المرفأ">
               ⚓
             </span>
             <div>
@@ -58,11 +87,51 @@ export const Header: React.FC<HeaderProps> = ({
                 Al-Mirfa Focus
               </span>
             </div>
-          </div>
+          </button>
+
+          {/* Quick Return to Focus Desk button if away from home */}
+          {currentTab !== 'home' && onGoHome && (
+            <button
+              onClick={onGoHome}
+              title="العودة لمكتب التركيز (الرئيسية)"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 transition cursor-pointer smooth-nav-pill animate-fade-in"
+              style={{ borderColor: 'rgba(2, 132, 199, 0.25)' }}
+            >
+              <Home className="w-3.5 h-3.5" />
+              <span>الرئيسية</span>
+            </button>
+          )}
         </div>
 
-        {/* Center/Left in RTL: Profile Badge & Streak & PWA Button */}
+        {/* Center/Left in RTL: Profile Badge & Streak & Settings & PWA Button */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Quick Settings Toggle Button */}
+          {onSelectTab && (
+            <button
+              id="header-settings-toggle-btn"
+              onClick={handleSettingsClick}
+              title={isSettingsActive ? 'العودة لمكتب التركيز' : 'إعدادات وتفضيلات التطبيق'}
+              className={`p-2 rounded-xl border text-xs font-medium cursor-pointer transition smooth-nav-pill ${
+                isSettingsActive ? 'shadow-xs scale-105' : 'hover:opacity-80'
+              }`}
+              style={
+                isSettingsActive
+                  ? {
+                      backgroundColor: 'var(--primary-color)',
+                      borderColor: 'var(--primary-color)',
+                      color: '#ffffff',
+                    }
+                  : {
+                      backgroundColor: 'var(--bg-elevated)',
+                      borderColor: 'var(--border-color)',
+                      color: 'var(--text-secondary)',
+                    }
+              }
+            >
+              <Settings className={`w-4 h-4 ${isSettingsActive ? 'rotate-90 transition-transform' : ''}`} />
+            </button>
+          )}
+
           <PWAInstallButton variant="header" />
 
           {/* Streak Shield Quick Indicator */}

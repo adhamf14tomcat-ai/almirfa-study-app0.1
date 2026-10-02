@@ -168,6 +168,37 @@ export default function App() {
     }
   }, [settings.palette, settings.fontFamily, settings.appearance, settings.uiScale]);
 
+  // Global Keyboard Shortcuts for fluid transitions
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input or textarea
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        if (sidebarOpen) {
+          setSidebarOpen(false);
+        } else if (currentTab !== 'home') {
+          setCurrentTab('home');
+        }
+      } else if (e.altKey && (e.key.toLowerCase() === 's' || e.key === 'س')) {
+        e.preventDefault();
+        setCurrentTab((prev) => (prev === 'settings' ? 'home' : 'settings'));
+      } else if (e.altKey && (e.key.toLowerCase() === 'h' || e.key === 'ر')) {
+        e.preventDefault();
+        setCurrentTab('home');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarOpen, currentTab]);
+
   // Handle Session Completion
   const handleSessionComplete = async (data: {
     durationMinutes: number;
@@ -492,6 +523,9 @@ export default function App() {
         currentRank={currentRank}
         onOpenProfile={() => setCurrentTab('profile')}
         onOpenStreakShield={() => setCurrentTab('profile')}
+        currentTab={currentTab}
+        onSelectTab={(tab) => setCurrentTab(tab)}
+        onGoHome={() => setCurrentTab('home')}
       />
 
       {/* 14-Section Sidebar Navigation */}
@@ -503,123 +537,166 @@ export default function App() {
         onOpenOnboarding={() => setOnboardingOpen(true)}
       />
 
-      {/* Main Container Area */}
+      {/* Main Container Area with Smooth View Transitions */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-6">
-        {currentTab === 'home' && (
-          <MainView
-            layout={layout}
-            settings={settings}
-            quote={activeQuote}
-            savedQuotesCount={quotes.filter((q) => q.isSaved).length}
-            subjects={subjects}
-            selectedSubjectId={selectedSubjectId}
-            dailyGoals={dailyGoals}
-            customSounds={customSounds}
-            onRegenerateQuote={handleRegenerateQuote}
-            onToggleSaveQuote={handleToggleSaveQuote}
-            onOpenQuotesNotebook={() => setCurrentTab('quotes')}
-            onSelectSubject={(id) => setSelectedSubjectId(id)}
-            onManageSubjects={() => setCurrentTab('subjects')}
-            onUpdateSettings={handleUpdateSettings}
-            onSessionComplete={handleSessionComplete}
-            onUpdateVolume={(type, vol) => {
-              if (type === 'ambient') handleUpdateSettings({ ambientVolume: vol });
-              else handleUpdateSettings({ personalVolume: vol });
-            }}
-            onOpenSoundLibrary={() => setCurrentTab('sounds')}
-          />
-        )}
+        <div key={currentTab} className="view-transition">
+          {currentTab === 'home' && (
+            <MainView
+              layout={layout}
+              settings={settings}
+              quote={activeQuote}
+              savedQuotesCount={quotes.filter((q) => q.isSaved).length}
+              subjects={subjects}
+              selectedSubjectId={selectedSubjectId}
+              dailyGoals={dailyGoals}
+              customSounds={customSounds}
+              onRegenerateQuote={handleRegenerateQuote}
+              onToggleSaveQuote={handleToggleSaveQuote}
+              onOpenQuotesNotebook={() => setCurrentTab('quotes')}
+              onSelectSubject={(id) => setSelectedSubjectId(id)}
+              onManageSubjects={() => setCurrentTab('subjects')}
+              onUpdateSettings={handleUpdateSettings}
+              onSessionComplete={handleSessionComplete}
+              onUpdateVolume={(type, vol) => {
+                if (type === 'ambient') handleUpdateSettings({ ambientVolume: vol });
+                else handleUpdateSettings({ personalVolume: vol });
+              }}
+              onOpenSoundLibrary={() => setCurrentTab('sounds')}
+            />
+          )}
 
-        {currentTab === 'profile' && (
-          <ProfileView
-            profile={profile}
-            streak={streak}
-            sessions={sessions}
-            onUpdateProfileName={handleUpdateProfileName}
-            onUseStreakShield={handleUseStreakShield}
-          />
-        )}
+          {currentTab === 'profile' && (
+            <ProfileView
+              profile={profile}
+              streak={streak}
+              sessions={sessions}
+              onUpdateProfileName={handleUpdateProfileName}
+              onUseStreakShield={handleUseStreakShield}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'badges' && <BadgesView badges={badges} />}
+          {currentTab === 'badges' && (
+            <BadgesView
+              badges={badges}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'analytics' && (
-          <AnalyticsView
-            sessions={sessions}
-            subjects={subjects}
-            streak={streak}
-            dailyGoals={dailyGoals}
-          />
-        )}
+          {currentTab === 'analytics' && (
+            <AnalyticsView
+              sessions={sessions}
+              subjects={subjects}
+              streak={streak}
+              dailyGoals={dailyGoals}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'heatmap' && (
-          <HeatmapView sessions={sessions} subjects={subjects} />
-        )}
+          {currentTab === 'heatmap' && (
+            <HeatmapView
+              sessions={sessions}
+              subjects={subjects}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'subjects' && (
-          <SubjectsView
-            subjects={subjects}
-            sessions={sessions}
-            onAddSubject={handleAddSubject}
-            onUpdateSubject={handleUpdateSubject}
-            onDeleteSubject={handleDeleteSubject}
-          />
-        )}
+          {currentTab === 'subjects' && (
+            <SubjectsView
+              subjects={subjects}
+              sessions={sessions}
+              onAddSubject={handleAddSubject}
+              onUpdateSubject={handleUpdateSubject}
+              onDeleteSubject={handleDeleteSubject}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'planner' && (
-          <AdaptivePlannerView
-            planner={planner}
-            subjects={subjects}
-            sessions={sessions}
-            onUpdatePlanner={handleUpdatePlanner}
-          />
-        )}
+          {currentTab === 'planner' && (
+            <AdaptivePlannerView
+              planner={planner}
+              subjects={subjects}
+              sessions={sessions}
+              onUpdatePlanner={handleUpdatePlanner}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'quotes' && (
-          <QuotesView
-            quotes={quotes}
-            onToggleSaveQuote={handleToggleSaveQuote}
-            onAddCustomQuote={handleAddCustomQuote}
-            onDeleteQuote={handleDeleteQuote}
-          />
-        )}
+          {currentTab === 'quotes' && (
+            <QuotesView
+              quotes={quotes}
+              onToggleSaveQuote={handleToggleSaveQuote}
+              onAddCustomQuote={handleAddCustomQuote}
+              onDeleteQuote={handleDeleteQuote}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'sounds' && (
-          <SoundsView
-            customSounds={customSounds}
-            onAddCustomSound={handleAddCustomSound}
-            onUpdateCustomSoundName={handleUpdateCustomSoundName}
-            onDeleteCustomSound={handleDeleteCustomSound}
-          />
-        )}
+          {currentTab === 'sounds' && (
+            <SoundsView
+              customSounds={customSounds}
+              onAddCustomSound={handleAddCustomSound}
+              onUpdateCustomSoundName={handleUpdateCustomSoundName}
+              onDeleteCustomSound={handleDeleteCustomSound}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'widgets' && (
-          <WidgetOrderView layout={layout} onUpdateLayout={handleUpdateLayout} />
-        )}
+          {currentTab === 'widgets' && (
+            <WidgetOrderView
+              layout={layout}
+              onUpdateLayout={handleUpdateLayout}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'appearance' && (
-          <AppearanceView settings={settings} onUpdateSettings={handleUpdateSettings} />
-        )}
+          {currentTab === 'appearance' && (
+            <AppearanceView
+              settings={settings}
+              onUpdateSettings={handleUpdateSettings}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'timer-settings' && (
-          <TimerSettingsView settings={settings} onUpdateSettings={handleUpdateSettings} />
-        )}
+          {currentTab === 'timer-settings' && (
+            <TimerSettingsView
+              settings={settings}
+              onUpdateSettings={handleUpdateSettings}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'backup' && (
-          <BackupView
-            onDataRestored={handleReloadAll}
-            onResetAllData={handleResetAllData}
-          />
-        )}
+          {currentTab === 'backup' && (
+            <BackupView
+              onDataRestored={handleReloadAll}
+              onResetAllData={handleResetAllData}
+              onBackToHome={() => setCurrentTab('home')}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
 
-        {currentTab === 'settings' && (
-          <SettingsView
-            settings={settings}
-            dailyGoals={dailyGoals}
-            onUpdateDailyTarget={handleUpdateDailyTarget}
-            onOpenOnboarding={() => setOnboardingOpen(true)}
-            onNavigateToTab={(tab) => setCurrentTab(tab)}
-          />
-        )}
+          {currentTab === 'settings' && (
+            <SettingsView
+              settings={settings}
+              dailyGoals={dailyGoals}
+              onUpdateDailyTarget={handleUpdateDailyTarget}
+              onOpenOnboarding={() => setOnboardingOpen(true)}
+              onNavigateToTab={(tab) => setCurrentTab(tab)}
+              onBackToHome={() => setCurrentTab('home')}
+            />
+          )}
+        </div>
       </main>
 
       {/* Post-Session Rating & Reflection Modal */}

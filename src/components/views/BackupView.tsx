@@ -8,17 +8,25 @@ import {
   AlertTriangle,
   FileJson,
   ShieldCheck,
+  ArrowRight,
+  Home,
 } from 'lucide-react';
 import { dbService } from '../../services/db';
+import { SettingsTabsNav } from '../navigation/SettingsTabsNav';
+import { ScreenTab } from '../Sidebar';
 
 interface BackupViewProps {
   onDataRestored: () => void;
   onResetAllData: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
+  onBackToHome?: () => void;
 }
 
 export const BackupView: React.FC<BackupViewProps> = ({
   onDataRestored,
   onResetAllData,
+  onNavigateToTab,
+  onBackToHome,
 }) => {
   const [includeAudio, setIncludeAudio] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -100,6 +108,15 @@ export const BackupView: React.FC<BackupViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {/* Settings Navigation Bar */}
+      {onNavigateToTab && (
+        <SettingsTabsNav
+          currentTab="backup"
+          onNavigate={onNavigateToTab}
+          onBackToHome={onBackToHome}
+        />
+      )}
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs"
@@ -255,6 +272,35 @@ export const BackupView: React.FC<BackupViewProps> = ({
           <span>إعادة ضبط المصنع ومسح جميع البيانات</span>
         </button>
       </div>
+
+      {/* Prev / Return to Focus Desk Flow Buttons */}
+      {onNavigateToTab && (
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <button
+            onClick={() => onNavigateToTab('widgets')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-xs border transition cursor-pointer hover:bg-slate-500/10 smooth-nav-pill"
+            style={{
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--bg-card)',
+            }}
+          >
+            <ArrowRight className="w-3.5 h-3.5" />
+            <span>السابق: ترتيب الودجات</span>
+          </button>
+
+          {onBackToHome && (
+            <button
+              onClick={onBackToHome}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-xs text-white transition shadow-sm hover:shadow cursor-pointer smooth-nav-pill"
+              style={{ backgroundColor: 'var(--primary-color)' }}
+            >
+              <Home className="w-3.5 h-3.5" />
+              <span>العودة لمكتب التركيز (الرئيسية ⚓)</span>
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

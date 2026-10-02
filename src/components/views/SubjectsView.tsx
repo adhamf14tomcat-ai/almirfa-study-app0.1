@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { BookOpen, Plus, Edit2, Trash2, Check, X, Clock, Target } from 'lucide-react';
 import { SubjectItem, StudySession } from '../../types';
+import { ViewHeaderNav } from '../navigation/ViewHeaderNav';
+import { ScreenTab } from '../Sidebar';
 
 interface SubjectsViewProps {
   subjects: SubjectItem[];
@@ -8,6 +10,8 @@ interface SubjectsViewProps {
   onAddSubject: (subject: Omit<SubjectItem, 'id' | 'createdAt'>) => void;
   onUpdateSubject: (subject: SubjectItem) => void;
   onDeleteSubject: (id: string) => void;
+  onBackToHome?: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
 }
 
 const PRESET_COLORS = [
@@ -27,6 +31,8 @@ export const SubjectsView: React.FC<SubjectsViewProps> = ({
   onAddSubject,
   onUpdateSubject,
   onDeleteSubject,
+  onBackToHome,
+  onNavigateToTab,
 }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState<SubjectItem | null>(null);
@@ -83,6 +89,20 @@ export const SubjectsView: React.FC<SubjectsViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {onBackToHome && (
+        <ViewHeaderNav
+          currentTab="subjects"
+          title="إدارة المواد والمشاريع"
+          icon={BookOpen}
+          onBackToHome={onBackToHome}
+          onNavigateToTab={onNavigateToTab}
+          relatedTabs={[
+            { id: 'planner', label: 'المنسق التكيفي' },
+            { id: 'analytics', label: 'الإحصائيات' },
+          ]}
+        />
+      )}
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4"

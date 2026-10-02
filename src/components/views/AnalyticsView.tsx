@@ -13,12 +13,16 @@ import {
 } from 'lucide-react';
 import { StudySession, SubjectItem, StreakData, DailyGoalStatus } from '../../types';
 import { getLocalDateString } from '../../utils/gamification';
+import { ViewHeaderNav } from '../navigation/ViewHeaderNav';
+import { ScreenTab } from '../Sidebar';
 
 interface AnalyticsViewProps {
   sessions: StudySession[];
   subjects: SubjectItem[];
   streak: StreakData;
   dailyGoals: DailyGoalStatus;
+  onBackToHome?: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
 }
 
 export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
@@ -26,6 +30,8 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   subjects,
   streak,
   dailyGoals,
+  onBackToHome,
+  onNavigateToTab,
 }) => {
   const todayStr = getLocalDateString();
   const now = new Date();
@@ -111,6 +117,21 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {onBackToHome && (
+        <ViewHeaderNav
+          currentTab="analytics"
+          title="الإحصائيات وتحليل الإنجاز"
+          icon={TrendingUp}
+          onBackToHome={onBackToHome}
+          onNavigateToTab={onNavigateToTab}
+          relatedTabs={[
+            { id: 'heatmap', label: 'الخريطة الحرارية' },
+            { id: 'planner', label: 'المنسق التكيفي' },
+            { id: 'badges', label: 'الأوسمة' },
+          ]}
+        />
+      )}
+
       {/* Title */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs"

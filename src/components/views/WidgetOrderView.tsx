@@ -1,15 +1,21 @@
 import React from 'react';
-import { LayoutGrid, ArrowUp, ArrowDown, Check, Columns, Square, Maximize2 } from 'lucide-react';
+import { LayoutGrid, ArrowUp, ArrowDown, Check, Columns, Square, Maximize2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { LayoutConfig, LayoutPreset, WidgetType } from '../../types';
+import { SettingsTabsNav } from '../navigation/SettingsTabsNav';
+import { ScreenTab } from '../Sidebar';
 
 interface WidgetOrderViewProps {
   layout: LayoutConfig;
   onUpdateLayout: (layout: LayoutConfig) => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
+  onBackToHome?: () => void;
 }
 
 export const WidgetOrderView: React.FC<WidgetOrderViewProps> = ({
   layout,
   onUpdateLayout,
+  onNavigateToTab,
+  onBackToHome,
 }) => {
   const widgetLabels: Record<WidgetType, { title: string; desc: string }> = {
     quote: { title: 'بطاقة المقولة الملهمة', desc: 'عرض المقولة اليومية مع زر الحفظ والتوليد' },
@@ -44,6 +50,15 @@ export const WidgetOrderView: React.FC<WidgetOrderViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {/* Settings Navigation Bar */}
+      {onNavigateToTab && (
+        <SettingsTabsNav
+          currentTab="widgets"
+          onNavigate={onNavigateToTab}
+          onBackToHome={onBackToHome}
+        />
+      )}
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs"
@@ -205,6 +220,33 @@ export const WidgetOrderView: React.FC<WidgetOrderViewProps> = ({
           })}
         </div>
       </div>
+
+      {/* Prev / Next Settings Flow Buttons */}
+      {onNavigateToTab && (
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <button
+            onClick={() => onNavigateToTab('timer-settings')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-xs border transition cursor-pointer hover:bg-slate-500/10 smooth-nav-pill"
+            style={{
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--bg-card)',
+            }}
+          >
+            <ArrowRight className="w-3.5 h-3.5" />
+            <span>السابق: إعدادات المؤقت</span>
+          </button>
+
+          <button
+            onClick={() => onNavigateToTab('backup')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-xs text-white transition shadow-sm hover:shadow cursor-pointer smooth-nav-pill"
+            style={{ backgroundColor: 'var(--primary-color)' }}
+          >
+            <span>التالي: النسخ الاحتياطي</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

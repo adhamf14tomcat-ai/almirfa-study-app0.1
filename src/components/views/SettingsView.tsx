@@ -1,14 +1,17 @@
 import React from 'react';
-import { Settings, Target, HelpCircle, ShieldCheck, Heart, Sparkles, Smartphone } from 'lucide-react';
+import { Settings, Target, HelpCircle, ShieldCheck, Heart, Sparkles, Smartphone, ArrowLeft } from 'lucide-react';
 import { AppSettings, DailyGoalStatus } from '../../types';
 import { APP_MOTTO } from '../../constants';
+import { SettingsTabsNav } from '../navigation/SettingsTabsNav';
+import { ScreenTab } from '../Sidebar';
 
 interface SettingsViewProps {
   settings: AppSettings;
   dailyGoals: DailyGoalStatus;
   onUpdateDailyTarget: (minutes: number) => void;
   onOpenOnboarding: () => void;
-  onNavigateToTab: (tab: any) => void;
+  onNavigateToTab: (tab: ScreenTab) => void;
+  onBackToHome?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
@@ -17,9 +20,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onUpdateDailyTarget,
   onOpenOnboarding,
   onNavigateToTab,
+  onBackToHome,
 }) => {
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {/* Settings Navigation Bar */}
+      <SettingsTabsNav
+        currentTab="settings"
+        onNavigate={onNavigateToTab}
+        onBackToHome={onBackToHome}
+      />
+
       {/* Header */}
       <div
         className="rounded-3xl p-6 sm:p-7 border shadow-xs"
@@ -170,6 +181,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         >
           <HelpCircle className="w-4 h-4" />
           <span>فتح الدليل الإرشادي</span>
+        </button>
+      </div>
+
+      {/* Next Flow Button */}
+      <div className="flex justify-start">
+        <button
+          onClick={() => onNavigateToTab('appearance')}
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm text-white transition shadow-sm hover:shadow cursor-pointer smooth-nav-pill"
+          style={{ backgroundColor: 'var(--primary-color)' }}
+        >
+          <span>الانتقال إلى المظهر والألوان والخطوط</span>
+          <ArrowLeft className="w-4 h-4" />
         </button>
       </div>
 

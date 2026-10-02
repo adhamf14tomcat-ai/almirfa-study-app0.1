@@ -14,6 +14,8 @@ import {
 import { UserProfile, StreakData, StudySession } from '../../types';
 import { RANKS } from '../../constants';
 import { getCurrentRank, getNextRank, getLocalDateString } from '../../utils/gamification';
+import { ViewHeaderNav } from '../navigation/ViewHeaderNav';
+import { ScreenTab } from '../Sidebar';
 
 interface ProfileViewProps {
   profile: UserProfile;
@@ -21,6 +23,8 @@ interface ProfileViewProps {
   sessions: StudySession[];
   onUpdateProfileName: (name: string) => void;
   onUseStreakShield: () => void;
+  onBackToHome?: () => void;
+  onNavigateToTab?: (tab: ScreenTab) => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -29,6 +33,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   sessions,
   onUpdateProfileName,
   onUseStreakShield,
+  onBackToHome,
+  onNavigateToTab,
 }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(profile.name);
@@ -48,6 +54,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto py-4 sm:py-6 space-y-6 text-right">
+      {onBackToHome && (
+        <ViewHeaderNav
+          currentTab="profile"
+          title="الملف الشخصي والرتب"
+          icon={Award}
+          onBackToHome={onBackToHome}
+          onNavigateToTab={onNavigateToTab}
+          relatedTabs={[
+            { id: 'badges', label: 'معرض الأوسمة' },
+            { id: 'analytics', label: 'الإحصائيات' },
+          ]}
+        />
+      )}
+
       {/* Profile Overview Card */}
       <div
         className="rounded-3xl p-6 sm:p-8 border shadow-xs transition-all relative overflow-hidden"
